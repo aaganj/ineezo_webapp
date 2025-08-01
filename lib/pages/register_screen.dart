@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inyzo_admin_web/service/AuthService.dart';
 
 import 'login_screen.dart';
 
@@ -11,17 +12,23 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
+  AuthService authService = AuthService();
 
-  void _register() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
-    }
+  void _register() async{
+     final success = await authService.register(
+         companyName: _nameController.text,
+         email: _emailController.text,
+         password: _passwordController.text);
+
+     if(success){
+       Navigator.pushReplacementNamed(context, '/');
+     }else{
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Registration failed")));
+     }
   }
 
   @override
@@ -41,6 +48,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20),
+
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: "Name",
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.email),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Enter the Host Name";
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 15),
+
 
                   /// Email Field
                   TextFormField(

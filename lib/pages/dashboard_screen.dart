@@ -25,7 +25,7 @@ class DashboardPage extends StatelessWidget {
               onPressed: () {
                 Navigator.pushNamed(context, '/create-event');
               },
-              child: Text('Create Corporate Event'),
+              child: Text('Create Public Event'),
             ),
             SizedBox(height: 20),
             ElevatedButton(

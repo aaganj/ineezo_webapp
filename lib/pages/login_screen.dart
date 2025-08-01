@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inyzo_admin_web/pages/register_screen.dart';
+import 'package:inyzo_admin_web/service/AuthService.dart';
 
 import 'dashboard_screen.dart';
 
@@ -12,14 +13,23 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  AuthService authService = AuthService();
 
-  void _login() {
-  //  if (_formKey.currentState!.validate()) {
+  void _login() async{
+  /*//  if (_formKey.currentState!.validate()) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => DashboardPage()),
       );
- //   }
+ //   }*/
+
+    final success = await authService.login(_emailController.text, _passwordController.text);
+    if(success){
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    }else{
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login failed")));
+    }
+
   }
 
   @override

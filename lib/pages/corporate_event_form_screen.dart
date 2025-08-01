@@ -48,7 +48,7 @@ class _CorporateEventFormState extends State<CorporateEventForm> {
     final String userId = "ineezoadmin";
 
     final urlResponse = await http.get(
-      Uri.parse("http://localhost:8080/api/s3/presigned-url?userId=$userId"),
+      Uri.parse("http://13.219.188.62:8080/api/s3/presigned-url?userId=$userId"),
     );
 
     if (urlResponse.statusCode != 200) return;
@@ -69,7 +69,7 @@ class _CorporateEventFormState extends State<CorporateEventForm> {
 
   void _submitForm() async{
     if (_formKey.currentState!.validate()) {
-      final apiUrl = Uri.parse('http://localhost:8080/api/corporate-events');
+      final apiUrl = Uri.parse('http://13.219.188.62:8080/api/corporate-events');
 
       final Map<String, dynamic> eventData = {
         "title": _titleController.text,
@@ -126,7 +126,7 @@ class _CorporateEventFormState extends State<CorporateEventForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Corporate Event')),
+      appBar: AppBar(title: Text('Create Public Event')),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(

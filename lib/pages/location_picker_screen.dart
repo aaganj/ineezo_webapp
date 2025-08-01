@@ -47,8 +47,9 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
 
 
   Future<void> _getPlacePrediction(String input) async{
-    final String url =
-        "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$googleApiKey&components=country:IN&types=geocode&language=en";
+    final String url = "http://13.219.188.62:8080/api/places/autocomplete?input=$input";
+    // final String url =
+    //     "https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$input&key=$googleApiKey&components=country:IN&language=en";
     try{
       final response = await http.get(Uri.parse(url));
 
@@ -59,7 +60,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
             _placePredictions = data['predictions'];
           });
         }else{
-          print('Google Places imcomplete ${data['status']}');
+          print('Google Places incomplete ${data['status']}');
           setState(() {
             _placePredictions=[];
           });
@@ -79,8 +80,10 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
   }
 
   Future<void> _getPlaceDetails(String placeId) async{
-    final String url =
-        'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry,name&key=$googleApiKey';
+  //  final String url =
+  //      'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry,name&key=$googleApiKey';
+
+    final url = 'http://13.219.188.62:8080/api/places/details?place_id=$placeId';
 
     try{
       final response = await http.get(Uri.parse(url));

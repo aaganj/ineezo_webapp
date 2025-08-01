@@ -42,7 +42,7 @@ class CorporateEventList extends StatelessWidget {
   }
 
   Future<List<CorporateEvent>> fetchCorporateEvents() async {
-    final url = Uri.parse('http://localhost:8080/api/corporate-events');  // Your API URL
+    final url = Uri.parse('http://13.219.188.62:8080/api/corporate-events');  // Your API URL
 
     final response = await http.get(url, headers: {'Content-Type': 'application/json'});
 
