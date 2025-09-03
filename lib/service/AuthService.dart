@@ -3,10 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService{
-   final String baseUrl = 'http://13.219.188.62:8080/api/corporate';
+  // final String baseUrl = 'http://13.219.188.62:8080/api/corporate';
+  final String baseUrl = 'https://api.ineezo.com/api/corporate';
 
 
-   Future<bool> login(String email,String password) async{
+   Future<Map<String,dynamic>> login(String email,String password) async{
      final url = Uri.parse('$baseUrl/login');
 
      final response = await http.post(
@@ -15,20 +16,24 @@ class AuthService{
        body: jsonEncode({'email':email, 'password':password}),
      );
 
+     final responseBody = jsonDecode(response.body);
+
      if(response.statusCode ==200){
-       final data = jsonDecode(response.body);
-       final token = data['token'];
-
-       final prefs = await SharedPreferences.getInstance();
-       await prefs.setString('token', token);
-
-       return true;
+       return {
+         'success':true,
+         'data': responseBody,
+         'statusCode':response.statusCode
+       };
      }else{
-       return false;
+       return  {
+         'success':false,
+         'data': responseBody,
+         'statusCode':response.statusCode
+       };;
      }
    }
 
-   Future<bool> register({
+   Future<Map<String,dynamic>> register({
      required String companyName,
      required String email,
      required String password,
@@ -44,17 +49,15 @@ class AuthService{
         'password' : password,
       }),
     );
-    return response.statusCode==200;
-   }
+    if (response.statusCode != 200) {
+      throw Exception('Failed to register: ${response.body}');
+    }
 
-   Future<void> logout() async{
-     final prefs = await SharedPreferences.getInstance();
-     await prefs.remove('token');
-   }
-
-   Future<String?> getToken() async{
-     final prefs = await SharedPreferences.getInstance();
-     return prefs.getString('token');
+    return {
+      'success':response.statusCode ==200,
+      'data': response.body,
+      'statusCode':response.statusCode
+    };
    }
 
 }

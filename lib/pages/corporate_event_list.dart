@@ -1,59 +1,77 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import '../model/corporate_event.dart';
 
-class CorporateEventList extends StatelessWidget {
+import 'package:inyzo_admin_web/provider/event_list_provider.dart';
+import 'package:provider/provider.dart';
+
+import 'corporate_event_detailpage.dart';
+import 'event_card.dart';
+
+class CorporateEventList extends StatefulWidget {
+  @override
+  State<CorporateEventList> createState() => _CorporateEventListState();
+}
+
+class _CorporateEventListState extends State<CorporateEventList> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+       final provider = context.read<EventListProvider>();
+       provider.getCorporateEventsById();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Corporate Events')),
-      body: FutureBuilder<List<CorporateEvent>>(
-        future: fetchCorporateEvents(), // API call to fetch events
-        builder: (context, snapshot) {
-          print("snapshot data : ${snapshot.data}");
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No events available'));
-          }
-          final events = snapshot.data!;
-          return ListView.builder(
-            itemCount: events.length,
-            itemBuilder: (context, index) {
-              final event = events[index];
-              return ListTile(
-                title: Text(event.title),
-                subtitle: Text(event.location),
-                onTap: () {
-                  // Navigate to event details page
-                },
-              );
-            },
-          );
-        },
+
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFF6F61),
+          title: Text('My Events',
+            style: TextStyle(color: Colors.white),),
+         leading: IconButton(
+             onPressed: (){
+               Navigator.pop(context);
+             },
+             icon: Icon(Icons.arrow_back,color: Colors.white,)),
       ),
+      body: Consumer<EventListProvider>(
+          builder: (context, eventListProvider, child) {
+              final events = eventListProvider.events;
+
+              if(eventListProvider.isLoading){
+                return Center(child: CircularProgressIndicator());
+              } else if(eventListProvider.errorMessage != null){
+                return Center(child: Text(eventListProvider.errorMessage!));
+              } else if(events.isEmpty){
+                return Center(child: Text("No events found"));
+              } else {
+                return ListView.builder(
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    final event = events[index];
+                    final count = eventListProvider.attendeeCounts[event.id.toString()] ?? 0;
+                    final screenWidth = MediaQuery.of(context).size.width;
+
+                    return GestureDetector(
+                      onTap: (){
+                      //  CorporateEventDetailPage(widget.event);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context)=>CorporateEventDetailPage(event: event)));
+                      },
+                      child: EventCard(
+                        event: event,
+                        count: count,
+                        provider: eventListProvider,
+                      ),
+                    );
+                  },
+                );
+              }
+          })
     );
-  }
-
-  Future<List<CorporateEvent>> fetchCorporateEvents() async {
-    final url = Uri.parse('http://13.219.188.62:8080/api/corporate-events');  // Your API URL
-
-    final response = await http.get(url, headers: {'Content-Type': 'application/json'});
-
-    if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON data
-      final List<dynamic> data = json.decode(response.body);
-
-      return data.map((eventJson) => CorporateEvent.fromJson(eventJson)).toList();
-    } else {
-      // If the response is not successful, throw an error
-      throw Exception('Failed to load corporate events');
-    }
   }
 }
