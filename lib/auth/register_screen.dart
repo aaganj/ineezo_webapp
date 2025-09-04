@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:inyzo_admin_web/auth/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../model/corporate_user.dart';
 import '../service/AuthService.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -16,23 +19,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   AuthService authService = AuthService();
+
+  Uint8List? _profileImageBytes;
+
 
   void _register() async{
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
 
+
+      if(authProvider.uploadedImageUrl==null){
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Please upload a logo/profile image")),
+        );
+        return;
+      }
+
+
+      CorporateUser corporateUser = CorporateUser(
+        companyName: _nameController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        profileUrl: authProvider.uploadedImageUrl!, // This will be set after uploading the image
+        contactNumber: _phoneController.text,
+        address: "",
+      );
+
       final success = await authProvider.register(
-         _nameController.text,
-         _emailController.text,
-        _passwordController.text,
+          corporateUser
       );
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("registeration succeed, please login to continue")),
+          SnackBar(content: Text("registration succeed, please login to continue")),
         );
         Navigator.pushReplacementNamed(context, '/login');
       } else {
@@ -47,6 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final authProvider = Provider.of<AuthProvider>(context,listen: false);
 
     return Scaffold(
       body: LayoutBuilder(
@@ -108,7 +132,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       TextFormField(
                         controller: _nameController,
                         decoration: const InputDecoration(
-                          labelText: "Name",
+                          labelText: "Host Name",
                           border: OutlineInputBorder(),
                           prefixIcon: Icon(Icons.person),
                         ),
@@ -141,7 +165,64 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                       const SizedBox(height: 15),
+                      /// Phone Number Field
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: const InputDecoration(
+                          labelText: "Contact Number",
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.phone),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Enter your contact number";
+                          }
+                          if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+                            return "Enter a valid 10-digit number";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: authProvider.pickAndUploadImage,
+                              icon: const Icon(Icons.upload_file),
+                              label: const Text("Upload Logo/Profile Image"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepOrange,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 5,),
+                          Consumer<AuthProvider>(
+                              builder: (context,auth,_){
 
+                                if (auth.isUploading) {
+                                  return const SizedBox(
+                                    width: 30,
+                                    height: 30,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  );
+                                }else if(authProvider.uploadedImageUrl!=null){
+                                  return CircleAvatar(
+                                    backgroundImage: MemoryImage(authProvider.imageBytes!),
+                                    radius: 30,
+                                  );
+                                }else{
+                                  return const CircleAvatar(
+                                    child: Icon(Icons.person),
+                                    radius: 30,
+                                  );
+                                }
+
+                              }),
+                        ],
+                      ),
+                      const SizedBox(height: 15),
                       /// Password Field
                       TextFormField(
                         controller: _passwordController,
@@ -213,7 +294,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           builder: (context,auth,_){
                             if(auth.errorMessage != null){
                                return Text(
-                                 auth.errorMessage!,
+                                'Registration failed',
                                  style: const TextStyle(color: Colors.red),
                                );
                             }
@@ -223,6 +304,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       /// Already Have Account
                       TextButton(
                         onPressed: () {
+                          context.read<AuthProvider>().clearData();
                           Navigator.pop(context);
                         },
                         child: Text(
@@ -241,5 +323,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         },
       ),
     );
+  }
+  @override
+  void dispose() {
+    super.dispose();
   }
 }

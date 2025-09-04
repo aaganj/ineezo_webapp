@@ -48,6 +48,7 @@ dependencies:
   flutter_screenutil: ^5.9.0
   web: ^1.1.1
   google_fonts: ^4.0.4
+  flutter_image_compress: ^2.4.0
 
 dev_dependencies:
   flutter_test:

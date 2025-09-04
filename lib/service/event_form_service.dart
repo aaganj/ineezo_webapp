@@ -112,4 +112,21 @@ class FormService{
        throw Exception("Failed to fetch attendee counts");
      }
   }
+
+  Future<Map<String, dynamic>> deleteEvent(double eventID) async {
+    final apiUrl = Uri.parse('https://api.ineezo.com/api/corporate-events/$eventID');
+    final response =  await http.delete(apiUrl, headers: {'Content-Type': 'application/json'});
+    print('resposne : ${response.statusCode}');
+    if(response.statusCode == 200){
+      return {
+        'success': true,
+        'statusCode': response.statusCode,
+      };
+    }else {
+      return {
+        'success': false,
+        'statusCode': response.statusCode,
+      };
+    }
+  }
 }

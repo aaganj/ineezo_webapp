@@ -37,6 +37,9 @@ class AuthService{
      required String companyName,
      required String email,
      required String password,
+     required String profileUrl,
+     required String contactNumber,
+     String? address,
    }) async{
 
     final url = Uri.parse('$baseUrl/register');
@@ -59,5 +62,38 @@ class AuthService{
       'statusCode':response.statusCode
     };
    }
+
+  Future<String?> getSignedImageUrlForHostProfile(String adminId) async{
+    final urlResponse = await http.get(
+      //  Uri.parse("http://13.219.188.62:8080/api/s3/presigned-url?userId=$userId"),
+      Uri.parse("https://api.ineezo.com/api/s3/hostprofile/presigned-url?userId=$adminId"),
+    );
+
+    if(urlResponse.statusCode == 200){
+      final presignedUrl = json.decode(urlResponse.body)['url'];
+      return presignedUrl;
+    }else {
+      return null;
+    }
+
+  }
+
+
+  Future<String?> uploadImage(String presignedUrl, List<int> imageBytes) async{
+    final uploadResponse = await http.put(
+      Uri.parse(presignedUrl),
+      headers: {"Content-Type": "image/jpeg"},
+      body: imageBytes,
+    );
+
+    print("Upload Response Status: ${uploadResponse.statusCode}");
+
+    if (uploadResponse.statusCode == 200) {
+      return presignedUrl.split("?").first;
+    } else {
+      return null;
+    }
+  }
+
 
 }

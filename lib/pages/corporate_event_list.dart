@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:inyzo_admin_web/provider/event_list_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'corporate_event_detailpage.dart';
 import 'event_card.dart';
 
 class CorporateEventList extends StatefulWidget {
@@ -55,18 +54,10 @@ class _CorporateEventListState extends State<CorporateEventList> {
                     final count = eventListProvider.attendeeCounts[event.id.toString()] ?? 0;
                     final screenWidth = MediaQuery.of(context).size.width;
 
-                    return GestureDetector(
-                      onTap: (){
-                      //  CorporateEventDetailPage(widget.event);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context)=>CorporateEventDetailPage(event: event)));
-                      },
-                      child: EventCard(
-                        event: event,
-                        count: count,
-                        provider: eventListProvider,
-                      ),
+                    return EventCard(
+                      event: event,
+                      count: count,
+                      provider: eventListProvider,
                     );
                   },
                 );

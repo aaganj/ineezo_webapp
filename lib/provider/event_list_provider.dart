@@ -62,6 +62,28 @@ class EventListProvider extends ChangeNotifier{
 
   }
 
+  Future<void> deleteEventById(double eventId) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final result = await formService.deleteEvent(eventId);
+      if (result['success'] == true) {
+        events.removeWhere((event) => event.id.toString() == eventId);
+        errorMessage = null;
+      } else {
+        errorMessage = "Failed to delete event. Status code: ${result['statusCode']}";
+      }
+    } catch (e) {
+      print("Error deleting event: $e");
+      errorMessage = "An error occurred: $e";
+    } finally {
+      print("came here");
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<String> generateBranchLink(String eventId, String title) async {
     try {
       final link = await branchLinkService.getBranchLink(eventId, title);

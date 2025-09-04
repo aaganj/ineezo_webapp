@@ -199,7 +199,29 @@ class _EventCardState extends State<EventCard> {
               flex: 1,
               child: Align(
                 alignment: Alignment.topRight,
-                child: IconButton(onPressed: (){},
+                child: IconButton(onPressed: ()async{
+                  final confirm = await showDialog(
+                      context: context,
+                      builder: (context)=>AlertDialog(
+                        title: Text('Delete Event'),
+                        content: Text("Are you sure you want to delete this event? This action cannot be undone."),
+                        actions: [
+                          TextButton(onPressed: ()=>Navigator.pop(context,false),
+                              child: Text("Cancel")),
+                          TextButton(onPressed: ()=>Navigator.pop(context,true),
+                              child: Text("Delete",style: TextStyle(color: Colors.red),)),
+                        ],
+                      ));
+
+                  if(confirm == true){
+                    await widget.provider.deleteEventById(widget.event.id!);
+                    if(mounted){
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Event deleted successfully")),
+                      );
+                    }
+                  }
+                },
                   icon: Icon(Icons.delete),
                   color: const Color(0xFFFF6F61),),
               ),

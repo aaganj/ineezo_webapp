@@ -178,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             builder: (context, authProvider, child){
                               if(authProvider.errorMessage != null){
                                 return Text(
-                                  authProvider.errorMessage!,
+                                  'login failed',
                                   style: const TextStyle(color: Colors.red),
                                   textAlign: TextAlign.center,
                                 );
@@ -188,6 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         /// Navigate to Register
                         TextButton(
                           onPressed: () {
+                            context.read<AuthProvider>().clearData();
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) => RegisterScreen()),

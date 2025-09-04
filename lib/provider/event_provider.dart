@@ -59,8 +59,6 @@ class EventProvider extends ChangeNotifier{
         _imageName = result.files.first.name;
       await uploadImage(_imageBytes,imageName);
     }
-
-
   }
 
   Future<double?> getHostID() async {
