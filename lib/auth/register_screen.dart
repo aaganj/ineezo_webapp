@@ -42,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       CorporateUser corporateUser = CorporateUser(
         companyName: _nameController.text,
-        email: _emailController.text,
+        companyEmail: _emailController.text,
         password: _passwordController.text,
         profileUrl: authProvider.uploadedImageUrl!, // This will be set after uploading the image
         contactNumber: _phoneController.text,

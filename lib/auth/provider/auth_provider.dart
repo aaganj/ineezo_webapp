@@ -17,6 +17,7 @@ class AuthProvider extends ChangeNotifier{
    Uint8List? _imageBytes;
    String? _imageName;
    String? _uploadedImageUrl;
+   CorporateUser? _currentUser;
 
    bool get isLoading => _isLoading;
    bool get isUploading => _isUploading;
@@ -25,6 +26,7 @@ class AuthProvider extends ChangeNotifier{
    Uint8List? get imageBytes => _imageBytes;
    String? get imageName => _imageName;
    String? get uploadedImageUrl => _uploadedImageUrl;
+   CorporateUser? get currentUser => _currentUser;
 
    void setUploadedImageUrl(String url) {
      _uploadedImageUrl = url;
@@ -50,12 +52,14 @@ class AuthProvider extends ChangeNotifier{
       final token = data != null ? data['token'] : null;
       final adminId = data != null ? data['id'] : null;
       final bool success = response['success'];
+      print('corporate USer dTO value : ${data['corporateUserDto']}');
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('token', token);
       await prefs.setDouble('adminId', adminId);
 
       if (success) {
+        _currentUser = CorporateUser.fromJson(data['corporateUserDto']);
         _isLoggedIn = true;
         _errorMessage = null;
       } else {
@@ -78,7 +82,7 @@ class AuthProvider extends ChangeNotifier{
      try {
        final result = await _authService.register(
            companyName: corporateUser.companyName,
-           email: corporateUser.email,
+           email: corporateUser.companyEmail,
            password: corporateUser.password,
            profileUrl: corporateUser.profileUrl,
            contactNumber: corporateUser.contactNumber,
@@ -89,11 +93,12 @@ class AuthProvider extends ChangeNotifier{
        final bool success = result['success'];
        final int statusCode = result['statusCode'];
        final dynamic data = result['data'];
+       _currentUser = CorporateUser.fromJson(data);
 
        if(success){
          _errorMessage = null;
        }else{
-         _errorMessage = data['message']?? 'Registration failed (Code: $statusCode)';
+         _errorMessage = 'Registration failed (Code: $statusCode)';
        }
        _setLoading(false);
        return success;
@@ -103,6 +108,38 @@ class AuthProvider extends ChangeNotifier{
        return false;
      }
 
+   }
+
+   Future<bool> updateProfile(CorporateUser updatedUser) async{
+     _setLoading(true);
+     try {
+       final result = await _authService.updateProfile(
+         companyName: updatedUser.companyName,
+         email: updatedUser.companyEmail,
+         profileUrl: updatedUser.profileUrl,
+         contactNumber: updatedUser.contactNumber,
+         address: updatedUser.address,
+       );
+
+       print ("result from auth provider: $result");
+
+       final bool success = result['success'];
+       final int statusCode = result['statusCode'];
+       final dynamic data = result['data'];
+       _currentUser = CorporateUser.fromJson(data);
+
+       if(success){
+         _errorMessage = null;
+       }else{
+         _errorMessage = 'Profile update failed (Code: $statusCode)';
+       }
+       _setLoading(false);
+       return success;
+     }catch(e){
+       _errorMessage = "Profile update failed: $e";
+       _setLoading(false);
+       return false;
+     }
    }
 
 

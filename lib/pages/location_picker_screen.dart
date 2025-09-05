@@ -153,11 +153,6 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 5),
-                      Text(
-                        "Lat: ${provider.selectedLocation?.latitude}, Lng: ${provider.selectedLocation?.longitude}",
-                        style: const TextStyle(fontSize: 14, color: Colors.black54),
-                        textAlign: TextAlign.center,
-                      ),
                     ],
                   ),
 

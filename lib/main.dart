@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inyzo_admin_web/location/location_provider.dart';
+import 'package:inyzo_admin_web/pages/host_profile.dart';
 import 'package:inyzo_admin_web/pages/public_event_form_screen.dart';
 import 'package:inyzo_admin_web/pages/corporate_event_list.dart';
 import 'package:inyzo_admin_web/pages/dashboard_screen.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => DashboardPage(),
         '/create-event': (context) => PublicEventForm(),
         '/event-listing': (context) => CorporateEventList(),
+        '/profile': (context) => UpdateProfileScreen(),
       },
     );
   }

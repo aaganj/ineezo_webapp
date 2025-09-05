@@ -20,12 +20,29 @@ class DashboardPage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.white),
-            onPressed: () {
-              provider.logout();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
+          PopupMenuButton<String>(
+            color: Colors.white,
+              onSelected: (value) {
+                if (value == 'profile') {
+                  Navigator.pushNamed(context, '/profile');
+                } else if (value == 'logout') {
+                  provider.logout();
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
+              },
+              itemBuilder: (BuildContext context){
+                return [
+                  const PopupMenuItem(
+                    value: 'profile',
+                      child: Text('Profile')
+                  ),
+                  const PopupMenuItem(
+                    value: 'logout',
+                      child: Text('Logout')
+                  ),
+                ];
+              },
+              icon: const Icon(Icons.account_circle,color: Colors.white,size: 32,),
           ),
         ],
       ),

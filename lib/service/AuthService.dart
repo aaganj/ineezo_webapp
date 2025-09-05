@@ -50,6 +50,8 @@ class AuthService{
         'companyName' : companyName,
         'email' : email,
         'password' : password,
+        'profileUrl': profileUrl,
+        'contactNumber':contactNumber,
       }),
     );
     if (response.statusCode != 200) {
@@ -61,6 +63,47 @@ class AuthService{
       'data': response.body,
       'statusCode':response.statusCode
     };
+   }
+
+  Future<Map<String,dynamic>> updateProfile({
+     required String companyName,
+     required String email,
+     required String profileUrl,
+     required String contactNumber,
+     String? address,
+   }) async{
+     final prefs = await SharedPreferences.getInstance();
+     final token = prefs.getString('authToken') ?? '';
+
+     final url = Uri.parse('https://api.ineezo.com/api/corporate-users');
+     final response = await http.put(
+       url,
+       headers: {
+         'Content-Type': 'application/json',
+         'Authorization': 'Bearer $token',
+       },
+       body: jsonEncode({
+         'companyName' : companyName,
+         'companyEmail' : email,
+         'profileUrl': profileUrl,
+         'contactNumber':contactNumber,
+         if (address != null) 'address': address,
+       }),
+     );
+
+     if(response.statusCode == 200){
+       return{
+          'success':true,
+          'data': jsonDecode(response.body),
+          'statusCode':response.statusCode
+       };
+     }else{
+        return{
+          'success':false,
+          'data': jsonDecode(response.body),
+          'statusCode':response.statusCode
+        };
+     }
    }
 
   Future<String?> getSignedImageUrlForHostProfile(String adminId) async{

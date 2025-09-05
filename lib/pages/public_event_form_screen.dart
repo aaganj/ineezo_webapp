@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:inyzo_admin_web/auth/provider/auth_provider.dart';
 import 'package:inyzo_admin_web/model/corporate_event.dart';
 import 'package:inyzo_admin_web/model/location_api_response.dart';
 import 'package:inyzo_admin_web/provider/event_provider.dart';
@@ -18,13 +17,23 @@ class _PublicEventFormState extends State<PublicEventForm> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _attendeesController = TextEditingController();
-  final TextEditingController _hostDetailsController = TextEditingController();
-  final TextEditingController _contactNumberController = TextEditingController();
+  late  TextEditingController _hostDetailsController = TextEditingController();
+  late  TextEditingController _contactNumberController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   LocationAPIResponse? _pickedLocation;
 
   DateTime? _startDateTime;
   DateTime? _endDateTime;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    final authProvider = context.read<AuthProvider>();
+    final currentUser = authProvider.currentUser;
+    _hostDetailsController = TextEditingController(text: currentUser?.companyName ?? '');
+    _contactNumberController = TextEditingController(text: currentUser?.contactNumber ?? '');
+    super.initState();
+  }
 
 
   void _submitForm() async{
@@ -357,7 +366,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
                           maxLines: 18, // allows long text
                           minLines: 8,
                           decoration: InputDecoration(
-                            hintText: "Abut the event...",
+                            hintText: "About the event...",
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
