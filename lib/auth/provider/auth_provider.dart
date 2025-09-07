@@ -18,6 +18,9 @@ class AuthProvider extends ChangeNotifier{
    String? _imageName;
    String? _uploadedImageUrl;
    CorporateUser? _currentUser;
+   bool _isForgetLoading = false;
+   bool _isResetLoading = false;
+   String? resetToken=null;
 
    bool get isLoading => _isLoading;
    bool get isUploading => _isUploading;
@@ -27,6 +30,8 @@ class AuthProvider extends ChangeNotifier{
    String? get imageName => _imageName;
    String? get uploadedImageUrl => _uploadedImageUrl;
    CorporateUser? get currentUser => _currentUser;
+    bool get isForgetLoading => _isForgetLoading;
+    bool get isResetLoading => _isResetLoading;
 
    void setUploadedImageUrl(String url) {
      _uploadedImageUrl = url;
@@ -43,6 +48,15 @@ class AuthProvider extends ChangeNotifier{
      notifyListeners();
    }
 
+    void setForgetLoading(bool value){
+      _isForgetLoading = value;
+      notifyListeners();
+    }
+
+    void setResetLoading(bool value){
+      _isResetLoading = value;
+      notifyListeners();
+    }
 
    Future<bool>  login(String email,String password) async{
     _setLoading(true);
@@ -200,6 +214,48 @@ class AuthProvider extends ChangeNotifier{
      }
 
    }
+
+   Future<void> forgetPassword(String email) async{
+     setForgetLoading(true);
+     try {
+       final response = await _authService.forgetPassword(email);
+       final bool success = response['success'];
+       if (success) {
+         _errorMessage = null;
+         resetToken = response['resetToken'];
+       } else {
+         _errorMessage = "Failed to send reset email";
+         resetToken=null;
+       }
+     }catch(e){
+       _errorMessage = "Request failed: $e";
+       resetToken=null;
+     }finally{
+       setForgetLoading(false);
+       notifyListeners();
+     }
+   }
+
+    Future<bool> resetPassword(String token, String newPassword) async{
+      setResetLoading(true);
+
+      try {
+        final response = await _authService.resetPassword(token, newPassword);
+        final bool success = response['success'];
+        if (success) {
+          _errorMessage = null;
+          return true;
+        } else {
+          _errorMessage = "Failed to reset password";
+          return false;
+        }
+      }catch(e){
+        _errorMessage = "Request failed: $e";
+        return false;
+      }finally{
+        setResetLoading(false);
+      }
+    }
 
 
    Future<void> logout() async{

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inyzo_admin_web/auth/forgetpassword_page.dart';
 import 'package:inyzo_admin_web/auth/provider/auth_provider.dart';
 import 'package:inyzo_admin_web/auth/register_screen.dart';
 import 'package:inyzo_admin_web/service/AuthService.dart';
@@ -185,6 +186,16 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                               return SizedBox.shrink();
                             }),
+                          TextButton(
+                          onPressed: () {
+                            context.read<AuthProvider>().clearData();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ForgetPasswordPage()),
+                            );
+                          },
+                          child: Text("forget password"),
+                        ),
                         /// Navigate to Register
                         TextButton(
                           onPressed: () {

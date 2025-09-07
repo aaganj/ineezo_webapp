@@ -54,15 +54,20 @@ class AuthService{
         'contactNumber':contactNumber,
       }),
     );
-    if (response.statusCode != 200) {
-      throw Exception('Failed to register: ${response.body}');
-    }
 
-    return {
-      'success':response.statusCode ==200,
-      'data': response.body,
-      'statusCode':response.statusCode
-    };
+    if(response.statusCode == 200){
+      return {
+        'success':true,
+        'data': jsonDecode(response.body),
+        'statusCode':response.statusCode
+      };
+    }else{
+      return {
+        'success':false,
+        'data': jsonDecode(response.body),
+        'statusCode':response.statusCode
+      };
+    }
    }
 
   Future<Map<String,dynamic>> updateProfile({
@@ -138,5 +143,61 @@ class AuthService{
     }
   }
 
+  Future<Map<String,dynamic>> forgetPassword(String? email) async{
+    final response = await http.post(
+      Uri.parse('https://api.ineezo.com/auth/forgot-password'),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: jsonEncode({
+        'email': email,
+      }),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return{
+        'success':true,
+        'resetToken': data['resetToken'],
+        'data': response.body,
+        'statusCode':response.statusCode
+      };
+    } else {
+      return{
+        'success':false,
+        'data': response.body,
+        'statusCode':response.statusCode
+      };
+    }
+  }
+
+
+  Future<Map<String,dynamic>> resetPassword(String token,String newPassword) async{
+    final response = await http.post(
+      Uri.parse(baseUrl),
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: jsonEncode({
+        'token': token,
+        'newPassword': newPassword
+      }),
+    );
+
+    if(response.statusCode == 200){
+     return{
+        'success':true,
+        'data': response.body,
+        'statusCode':response.statusCode
+     };
+    }else{
+     return{
+        'success':false,
+        'data': response.body,
+        'statusCode':response.statusCode
+     };
+    }
+  }
 
 }
