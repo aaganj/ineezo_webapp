@@ -19,6 +19,7 @@ class DashboardPage extends StatelessWidget {
           'Dashboard',
           style: TextStyle(color: Colors.white),
         ),
+        automaticallyImplyLeading: false,
         actions: [
           PopupMenuButton<String>(
             color: Colors.white,

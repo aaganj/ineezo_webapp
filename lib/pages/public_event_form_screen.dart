@@ -15,6 +15,8 @@ class PublicEventForm extends StatefulWidget {
 class _PublicEventFormState extends State<PublicEventForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _instagramController = TextEditingController();
+  final TextEditingController _bookingController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _attendeesController = TextEditingController();
   late  TextEditingController _hostDetailsController = TextEditingController();
@@ -52,6 +54,8 @@ class _PublicEventFormState extends State<PublicEventForm> {
           longitude:  _pickedLocation!.longitude,
           eventStartDateTime: provider.startDateTime ?? DateTime.now(),
           eventEndDateTime: provider.endDateTime ?? DateTime.now(),
+          instagramUrl: _instagramController.text,
+          bookingUrl: _bookingController.text,
           hostID: await provider.getHostID() ?? 0.0
       );
 
@@ -71,6 +75,9 @@ class _PublicEventFormState extends State<PublicEventForm> {
           _locationController.clear();
           _startDateTime=null;
           _endDateTime=null;
+          _bookingController.clear();
+          _instagramController.clear();
+          _pickedLocation = null;
           provider.clear();
 
           ScaffoldMessenger.of(context).showSnackBar(
@@ -385,6 +392,30 @@ class _PublicEventFormState extends State<PublicEventForm> {
                     ),
                   ),
                   SizedBox(height: 20),
+                  _buildCard(child: Column(
+                    children: [
+                      _buildInputField(
+                        controller: _instagramController,
+                        label: "Add a instagram link (optional)",
+                        icon: Icons.camera_alt_outlined,
+                        isRequired: false,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  )),
+                  SizedBox(height: 20),
+                  _buildCard(child: Column(
+                    children: [
+                      _buildInputField(
+                        controller: _bookingController,
+                        label: "Add a booking link (optional)",
+                        icon: Icons.book_online_outlined,
+                        isRequired: false,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  )),
+                  SizedBox(height: 20),
                   Center(
                     child: ElevatedButton(
                       onPressed: _submitForm,
@@ -431,6 +462,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
     required IconData icon,
     int maxLines = 1,
     TextInputType? keyboardType,
+    bool isRequired = true,
   }) {
     return TextFormField(
       controller: controller,
@@ -441,7 +473,11 @@ class _PublicEventFormState extends State<PublicEventForm> {
         prefixIcon: Icon(icon, color: const Color(0xFFFF6F61)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      validator: (value) => value!.isEmpty ? "Enter $label" : null,
+      validator: (value) {
+        if (!isRequired) return null;
+        value!.isEmpty ? "Enter $label" : null;
+      }
+
     );
   }
 

@@ -189,7 +189,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: authProvider.pickAndUploadImage,
+                              onPressed:(){
+
+                                authProvider.pickAndUploadImage();
+
+                              },
                               icon: const Icon(Icons.upload_file),
                               label: const Text("Upload Logo/Profile Image"),
                               style: ElevatedButton.styleFrom(

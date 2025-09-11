@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../model/corporate_event.dart';
 import '../provider/event_list_provider.dart';
+import '../share/share_event_page.dart';
 
 class EventCard extends StatefulWidget {
   final CorporateEvent event;
@@ -169,6 +170,15 @@ class _EventCardState extends State<EventCard> {
                               ),
                             );
                           },
+                        ),
+                        ShareEventPage(
+                          title: "Board Game Night 🎲",
+                          description: "Join us for fun games & new friends!",
+                          host: "Buddies & Boards",
+                          dateTime: "Saturday, Sept 13, 5:00 PM",
+                          location: "Indiranagar",
+                          imageUrl: "https://yourcdn.com/event_image.jpg",
+                          eventLink: branchLink!,
                         ),
                       ],
                     )

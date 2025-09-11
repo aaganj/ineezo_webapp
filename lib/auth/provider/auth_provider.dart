@@ -168,6 +168,8 @@ class AuthProvider extends ChangeNotifier{
        _imageBytes = result.files.first.bytes;
        _imageName = result.files.first.name;
        await uploadImage(_imageBytes,imageName);
+     }else{
+        setUploading(false);
      }
    }
 
