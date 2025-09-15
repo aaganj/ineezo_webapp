@@ -52,7 +52,6 @@ class _CorporateEventListState extends State<CorporateEventList> {
                   itemBuilder: (context, index) {
                     final event = events[index];
                     final count = eventListProvider.attendeeCounts[event.id.toString()] ?? 0;
-                    final screenWidth = MediaQuery.of(context).size.width;
 
                     return EventCard(
                       event: event,

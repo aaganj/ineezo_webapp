@@ -22,6 +22,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
   late  TextEditingController _hostDetailsController = TextEditingController();
   late  TextEditingController _contactNumberController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _eventTypeController = TextEditingController();
   LocationAPIResponse? _pickedLocation;
 
   DateTime? _startDateTime;
@@ -56,7 +57,9 @@ class _PublicEventFormState extends State<PublicEventForm> {
           eventEndDateTime: provider.endDateTime ?? DateTime.now(),
           instagramUrl: _instagramController.text,
           bookingUrl: _bookingController.text,
-          hostID: await provider.getHostID() ?? 0.0
+          eventType: _eventTypeController.text,
+          hostID: await provider.getHostID() ?? 0.0,
+
       );
 
 
@@ -77,6 +80,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
           _endDateTime=null;
           _bookingController.clear();
           _instagramController.clear();
+          _eventTypeController.clear();
           _pickedLocation = null;
           provider.clear();
 
@@ -130,6 +134,16 @@ class _PublicEventFormState extends State<PublicEventForm> {
                         controller: _titleController,
                         label: "Event Title",
                         icon: Icons.title,
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  )),
+                  _buildCard(child: Column(
+                    children: [
+                      _buildInputField(
+                        controller: _eventTypeController,
+                        label: "e.g. Board Games, Music Night, Pub Meetup, Comedy",
+                        icon: Icons.category,
                       ),
                       const SizedBox(height: 16),
                     ],

@@ -11,6 +11,7 @@ class CorporateEvent {
   final double longitude;
   final String instagramUrl;
   final String bookingUrl;
+  final String eventType;
   final DateTime eventStartDateTime;
   final DateTime eventEndDateTime;
   final double hostID;
@@ -28,6 +29,7 @@ class CorporateEvent {
     required this.longitude,
     this.instagramUrl = '',
     this.bookingUrl = '',
+    required this.eventType,
     required this.eventStartDateTime,
     required this.eventEndDateTime,
     required this.hostID,
@@ -47,6 +49,7 @@ class CorporateEvent {
       longitude: json['longitude'].toDouble(),
       instagramUrl: json['instagramUrl'] ?? '',
       bookingUrl: json['bookingUrl'] ?? '',
+      eventType: json['eventType'] ?? 'General',
       eventStartDateTime: DateTime.parse(json['eventStartDateTime']),
       eventEndDateTime: DateTime.parse(json['eventEndDateTime']),
       hostID: json['hostID'],

@@ -69,7 +69,7 @@ class EventListProvider extends ChangeNotifier{
 
       final result = await formService.deleteEvent(eventId);
       if (result['success'] == true) {
-        events.removeWhere((event) => event.id.toString() == eventId);
+        events.removeWhere((event) => event.id == eventId);
         errorMessage = null;
       } else {
         errorMessage = "Failed to delete event. Status code: ${result['statusCode']}";
