@@ -23,6 +23,8 @@ class _PublicEventFormState extends State<PublicEventForm> {
   late  TextEditingController _contactNumberController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _eventTypeController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  bool _isFree = true;
   LocationAPIResponse? _pickedLocation;
 
   DateTime? _startDateTime;
@@ -58,6 +60,8 @@ class _PublicEventFormState extends State<PublicEventForm> {
           instagramUrl: _instagramController.text,
           bookingUrl: _bookingController.text,
           eventType: _eventTypeController.text,
+          isFree: _isFree,
+          price: _isFree ? 0.0 : double.tryParse(_priceController.text) ?? 0.0,
           eventStartDateTime: provider.startDateTime ?? DateTime.now(),
           eventEndDateTime: provider.endDateTime ?? DateTime.now(),
       );
@@ -418,6 +422,68 @@ class _PublicEventFormState extends State<PublicEventForm> {
                       const SizedBox(height: 16),
                     ],
                   )),
+                  _buildCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Is this a Free Event?",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Switch(
+                              value: _isFree,
+                              activeColor: Color(0xFFFF6F61), // Coral theme
+                              onChanged: (value) {
+                                setState(() {
+                                  _isFree = value;
+                                  if (_isFree) {
+                                    _priceController.clear(); // reset when free
+                                  }
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+
+                        // 🔹 Animated expand/collapse for price input
+                        AnimatedSize(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          child: _isFree
+                              ? SizedBox.shrink() // hides smoothly
+                              : Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: TextFormField(
+                              controller: _priceController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: "Price (₹)",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                contentPadding: const EdgeInsets.all(16),
+                              ),
+                              validator: (value) {
+                                if (!_isFree && (value == null || value.isEmpty)) {
+                                  return "Please enter price for the event";
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                   SizedBox(height: 20),
                   _buildCard(child: Column(
                     children: [

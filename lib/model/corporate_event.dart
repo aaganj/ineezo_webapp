@@ -12,6 +12,8 @@ class CorporateEvent {
   final String instagramUrl;
   final String bookingUrl;
   final String eventType;
+  final bool isFree;
+  final double price;
   final DateTime eventStartDateTime;
   final DateTime eventEndDateTime;
   final double hostID;
@@ -29,6 +31,8 @@ class CorporateEvent {
     required this.longitude,
     this.instagramUrl = '',
     this.bookingUrl = '',
+    required this.isFree,
+    this.price=0.0,
     required this.eventType,
     required this.eventStartDateTime,
     required this.eventEndDateTime,
@@ -50,6 +54,8 @@ class CorporateEvent {
       instagramUrl: json['instagramUrl'] ?? '',
       bookingUrl: json['bookingUrl'] ?? '',
       eventType: json['eventType'] ?? 'General',
+      isFree: json['isFree'] ?? true,
+      price: json['price'] != null ? json['price'].toDouble() : 0.0,
       eventStartDateTime: DateTime.parse(json['eventStartDateTime']),
       eventEndDateTime: DateTime.parse(json['eventEndDateTime']),
       hostID: json['hostID'],
@@ -71,6 +77,8 @@ class CorporateEvent {
       'instagramUrl': instagramUrl,
       'bookingUrl': bookingUrl,
       'eventType': eventType,
+      'isFree': isFree,
+      'price': price,
       'eventStartDateTime': eventStartDateTime.toIso8601String(),
       'eventEndDateTime': eventEndDateTime.toIso8601String(),
       'hostID': hostID,
