@@ -58,6 +58,7 @@ class LocationApiService{
           final result = data['result'];
           final geometry = result['geometry'];
           final location = geometry['location'];
+          final formattedAddress = result['formatted_address'];
           final double lat = location['lat'];
           final double long = location['lng'];
           final String name = result['name'];
@@ -66,7 +67,7 @@ class LocationApiService{
           print('Lat : $lat and long : $long');
           LocationAPIResponse apiResponse = LocationAPIResponse(
               selectedLocationName: name,
-              selectedFormattedAddress: name,
+              selectedFormattedAddress: formattedAddress,
               latitude: lat,
               longitude: long);
 

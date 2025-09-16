@@ -11,5 +11,14 @@ class LocationAPIResponse{
         required this.latitude,
         required this.longitude});
 
+  factory LocationAPIResponse.fromJson(Map<String, dynamic> json) {
+    final result = json['result'];
+    return LocationAPIResponse(
+      selectedLocationName: result['name'],
+      selectedFormattedAddress: result['formatted_address'],
+      latitude: result['geometry']['location']['lat']?.toDouble(),
+      longitude: result['geometry']['location']['lng']?.toDouble(),
+    );
+  }
 
 }
