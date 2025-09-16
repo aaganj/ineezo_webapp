@@ -42,6 +42,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
   void _submitForm() async{
     if (_formKey.currentState!.validate()) {
       final provider = Provider.of<EventProvider>(context,listen: false);
+      print('eventType Controller: ${_eventTypeController.text}');
 
       CorporateEvent corporateEvent = CorporateEvent(
           title: _titleController.text,
@@ -53,17 +54,17 @@ class _PublicEventFormState extends State<PublicEventForm> {
           location: _pickedLocation!.selectedLocationName ?? '',
           latitude: _pickedLocation!.latitude,
           longitude:  _pickedLocation!.longitude,
-          eventStartDateTime: provider.startDateTime ?? DateTime.now(),
-          eventEndDateTime: provider.endDateTime ?? DateTime.now(),
+          hostID: await provider.getHostID() ?? 0.0,
           instagramUrl: _instagramController.text,
           bookingUrl: _bookingController.text,
           eventType: _eventTypeController.text,
-          hostID: await provider.getHostID() ?? 0.0,
-
+          eventStartDateTime: provider.startDateTime ?? DateTime.now(),
+          eventEndDateTime: provider.endDateTime ?? DateTime.now(),
       );
 
 
       try {
+        print('Creating event: ${corporateEvent.toJson()}');
 
         bool success = await provider.createEvent(corporateEvent);
 

@@ -116,6 +116,8 @@ class EventProvider extends ChangeNotifier{
 
   Future<bool> createEvent(CorporateEvent corporateEvent) async{
     try {
+      print('corporateEvent to be created: ${corporateEvent.toJson()}');
+
       final response = await formService.submitForm(corporateEvent);
         print('response: $response');
         print('response success status : ${response['success']}');

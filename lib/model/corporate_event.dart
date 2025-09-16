@@ -70,6 +70,7 @@ class CorporateEvent {
       'longitude': longitude,
       'instagramUrl': instagramUrl,
       'bookingUrl': bookingUrl,
+      'eventType': eventType,
       'eventStartDateTime': eventStartDateTime.toIso8601String(),
       'eventEndDateTime': eventEndDateTime.toIso8601String(),
       'hostID': hostID,
