@@ -7,6 +7,7 @@ class CorporateEvent {
   final String contactNumber;
   final String? hostname;
   final String location;
+  final String formattedAddress;
   final double latitude;
   final double longitude;
   final String instagramUrl;
@@ -27,6 +28,7 @@ class CorporateEvent {
     required this.contactNumber,
     required this.hostname,
     required this.location,
+    required this.formattedAddress,
     required this.latitude,
     required this.longitude,
     this.instagramUrl = '',
@@ -49,6 +51,7 @@ class CorporateEvent {
       hostname: json['hostName'],
       contactNumber: json['contactNumber'],
       location: json['location'],
+      formattedAddress: json['formattedAddress'] ?? json['location'],
       latitude: json['latitude'].toDouble(),
       longitude: json['longitude'].toDouble(),
       instagramUrl: json['instagramUrl'] ?? '',
@@ -72,6 +75,7 @@ class CorporateEvent {
       'hostname': hostname,
       'contactNumber': contactNumber,
       'location': location,
+      'formattedAddress': formattedAddress,
       'latitude': latitude,
       'longitude': longitude,
       'instagramUrl': instagramUrl,

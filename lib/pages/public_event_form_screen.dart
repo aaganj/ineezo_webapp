@@ -54,6 +54,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
           hostname: _hostDetailsController.text,
           contactNumber: _contactNumberController.text,
           location: _pickedLocation!.selectedLocationName ?? '',
+          formattedAddress: _pickedLocation!.selectedFormattedAddress ?? '',
           latitude: _pickedLocation!.latitude,
           longitude:  _pickedLocation!.longitude,
           hostID: await provider.getHostID() ?? 0.0,
