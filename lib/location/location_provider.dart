@@ -7,12 +7,12 @@ class LocationProvider extends ChangeNotifier{
   bool _isLoading = false;
   String? _errorMessage;
   List<dynamic> _placePredictions=[];
-  LocationAPIResponse? _selectedLocation;
+  LocationApiResponse? _selectedLocation;
 
   bool get isLoading =>_isLoading;
   String? get error=>_errorMessage;
   List<dynamic> get placePredictions=>_placePredictions;
-  LocationAPIResponse? get selectedLocation=>_selectedLocation;
+  LocationApiResponse? get selectedLocation=>_selectedLocation;
 
   LocationApiService locationApiService = LocationApiService();
 

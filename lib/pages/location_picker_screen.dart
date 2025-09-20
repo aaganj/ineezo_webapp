@@ -141,14 +141,14 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        "Location: ${provider.selectedLocation?.selectedLocationName ?? ""}",
+                        "Location: ${provider.selectedLocation?.name ?? ""}",
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 5),
                       Text(
-                        "Address: ${provider.selectedLocation?.selectedFormattedAddress ?? ""}",
+                        "Address: ${provider.selectedLocation?.address ?? ""}",
                         style: const TextStyle(fontSize: 14, color: Colors.black54),
                         textAlign: TextAlign.center,
                       ),

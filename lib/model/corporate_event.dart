@@ -1,3 +1,7 @@
+import 'package:inyzo_admin_web/model/venue_model.dart';
+
+import 'event_schedule.dart';
+
 class CorporateEvent {
   final double? id;
   final String title;
@@ -6,18 +10,14 @@ class CorporateEvent {
   final String imageUrl;
   final String contactNumber;
   final String? hostname;
-  final String location;
-  final String formattedAddress;
-  final double latitude;
-  final double longitude;
+  final Venue venue;
   final String instagramUrl;
   final String bookingUrl;
   final String eventType;
   final bool isFree;
   final double price;
-  final DateTime eventStartDateTime;
-  final DateTime eventEndDateTime;
-  final double hostID;
+  final double hostId;
+  final List<EventSchedule> schedules;
 
   CorporateEvent({
     this.id,
@@ -27,18 +27,14 @@ class CorporateEvent {
     required this.imageUrl,
     required this.contactNumber,
     required this.hostname,
-    required this.location,
-    required this.formattedAddress,
-    required this.latitude,
-    required this.longitude,
+    required this.venue,
     this.instagramUrl = '',
     this.bookingUrl = '',
     required this.isFree,
     this.price=0.0,
     required this.eventType,
-    required this.eventStartDateTime,
-    required this.eventEndDateTime,
-    required this.hostID,
+    required this.hostId,
+    required this.schedules,
   });
 
   factory CorporateEvent.fromJson(Map<String, dynamic> json) {
@@ -50,18 +46,17 @@ class CorporateEvent {
       imageUrl: json['imageUrl'],
       hostname: json['hostName'],
       contactNumber: json['contactNumber'],
-      location: json['location'],
-      formattedAddress: json['formattedAddress'] ?? json['location'],
-      latitude: json['latitude'].toDouble(),
-      longitude: json['longitude'].toDouble(),
+      venue: json['venue'] != null ? Venue.fromJson(json['venue']) : throw Exception("Venue missing"),  // ✅ new
       instagramUrl: json['instagramUrl'] ?? '',
       bookingUrl: json['bookingUrl'] ?? '',
       eventType: json['eventType'] ?? 'General',
       isFree: json['isFree'] ?? true,
       price: json['price'] != null ? json['price'].toDouble() : 0.0,
-      eventStartDateTime: DateTime.parse(json['eventStartDateTime']),
-      eventEndDateTime: DateTime.parse(json['eventEndDateTime']),
-      hostID: json['hostID'],
+      hostId: json['hostId'],
+      schedules: (json['schedules'] as List<dynamic>?)
+          ?.map((e) => EventSchedule.fromJson(e))
+          .toList() ??
+          [],
     );
   }
 
@@ -74,18 +69,14 @@ class CorporateEvent {
       'imageUrl': imageUrl,
       'hostname': hostname,
       'contactNumber': contactNumber,
-      'location': location,
-      'formattedAddress': formattedAddress,
-      'latitude': latitude,
-      'longitude': longitude,
+      'venue': venue.toJson(),
       'instagramUrl': instagramUrl,
       'bookingUrl': bookingUrl,
       'eventType': eventType,
       'isFree': isFree,
       'price': price,
-      'eventStartDateTime': eventStartDateTime.toIso8601String(),
-      'eventEndDateTime': eventEndDateTime.toIso8601String(),
-      'hostID': hostID,
+      'hostId': hostId,
+      'schedules': schedules.map((s) => s.toJson()).toList(),
     };
   }
 }

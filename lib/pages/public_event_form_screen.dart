@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:inyzo_admin_web/auth/provider/auth_provider.dart';
 import 'package:inyzo_admin_web/model/corporate_event.dart';
 import 'package:inyzo_admin_web/model/location_api_response.dart';
 import 'package:inyzo_admin_web/provider/event_provider.dart';
+import 'package:inyzo_admin_web/provider/event_schedule_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../model/venue_model.dart';
+import 'event_schedule_screen.dart';
 import 'location_picker_screen.dart';
 
 class PublicEventForm extends StatefulWidget {
@@ -25,10 +29,8 @@ class _PublicEventFormState extends State<PublicEventForm> {
   final TextEditingController _eventTypeController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   bool _isFree = true;
-  LocationAPIResponse? _pickedLocation;
+  LocationApiResponse? _pickedLocation;
 
-  DateTime? _startDateTime;
-  DateTime? _endDateTime;
 
   @override
   void initState() {
@@ -44,7 +46,31 @@ class _PublicEventFormState extends State<PublicEventForm> {
   void _submitForm() async{
     if (_formKey.currentState!.validate()) {
       final provider = Provider.of<EventProvider>(context,listen: false);
-      print('eventType Controller: ${_eventTypeController.text}');
+
+
+      if (provider.uploadedImageUrl!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please add at the event Image ")),
+        );
+        return;
+      }
+
+      final scheduleProvider = context.read<EventScheduleProvider>();
+      if (scheduleProvider.schedules.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please add at least one schedule")),
+        );
+        return;
+      }
+
+      Venue venue = Venue(
+        name: _pickedLocation!.name,
+        address: _pickedLocation!.address,
+        latitude: _pickedLocation!.latitude,
+        longitude: _pickedLocation!.longitude,
+        placeId: _pickedLocation!.placeId,
+        id: _pickedLocation!.id,
+      );
 
       CorporateEvent corporateEvent = CorporateEvent(
           title: _titleController.text,
@@ -53,24 +79,19 @@ class _PublicEventFormState extends State<PublicEventForm> {
           imageUrl: provider.uploadedImageUrl ?? '',
           hostname: _hostDetailsController.text,
           contactNumber: _contactNumberController.text,
-          location: _pickedLocation!.selectedLocationName ?? '',
-          formattedAddress: _pickedLocation!.selectedFormattedAddress ?? '',
-          latitude: _pickedLocation!.latitude,
-          longitude:  _pickedLocation!.longitude,
-          hostID: await provider.getHostID() ?? 0.0,
+          venue: venue,
+          hostId: await provider.getHostID() ?? 0.0,
           instagramUrl: _instagramController.text,
           bookingUrl: _bookingController.text,
           eventType: _eventTypeController.text,
           isFree: _isFree,
           price: _isFree ? 0.0 : double.tryParse(_priceController.text) ?? 0.0,
-          eventStartDateTime: provider.startDateTime ?? DateTime.now(),
-          eventEndDateTime: provider.endDateTime ?? DateTime.now(),
+          schedules: scheduleProvider.schedules,
+
       );
 
 
       try {
-        print('Creating event: ${corporateEvent.toJson()}');
-
         bool success = await provider.createEvent(corporateEvent);
 
      //   if (response.statusCode == 200) {
@@ -82,8 +103,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
           _hostDetailsController.clear();
           _contactNumberController.clear();
           _locationController.clear();
-          _startDateTime=null;
-          _endDateTime=null;
+          context.read<EventScheduleProvider>().clearSchedules();
           _bookingController.clear();
           _instagramController.clear();
           _eventTypeController.clear();
@@ -170,8 +190,8 @@ class _PublicEventFormState extends State<PublicEventForm> {
                         ),
                       ),
                       onTap: () async {
-                        final LocationAPIResponse? locationApiResponse =
-                        await Navigator.push<LocationAPIResponse>(
+                        final LocationApiResponse? locationApiResponse =
+                        await Navigator.push<LocationApiResponse>(
                           context,
                           MaterialPageRoute(builder: (context) => LocationSearchScreen()),
                         );
@@ -180,7 +200,7 @@ class _PublicEventFormState extends State<PublicEventForm> {
                           setState(() {
                             _pickedLocation = locationApiResponse;
                             _locationController.text =
-                            locationApiResponse.selectedFormattedAddress!;
+                            locationApiResponse.address!;
                           });
                         }
                       },
@@ -302,76 +322,50 @@ class _PublicEventFormState extends State<PublicEventForm> {
                   ),
 
                   const SizedBox(height: 20),
-                  // Start Date & Time Picker
-                  /// Card 5 - Schedule
-                  Consumer<EventProvider>(
-                    builder: (context, provider, _) {
-                      return _buildCard(
-                        child: Column(
+                  _buildCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildDateTile(
-                              "Start Date & Time",
-                              provider.startDateTime,
-                                  () async {
-                                final pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime.now(),
-                                  lastDate: DateTime(2100),
-                                );
-                                if (pickedDate != null) {
-                                  final pickedTime = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                  );
-                                  if (pickedTime != null) {
-                                    _startDateTime = DateTime(
-                                      pickedDate.year,
-                                      pickedDate.month,
-                                      pickedDate.day,
-                                      pickedTime.hour,
-                                      pickedTime.minute,
-                                    );
-                                    provider.setStartDate(_startDateTime);
-
-                                  }
-                                }
-                              },
+                            const Text(
+                              "Event Schedules",
+                              style: TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
                             ),
-                            const Divider(),
-                            _buildDateTile(
-                              "End Date & Time",
-                              provider.endDateTime,
-                                  () async {
-                                final pickedDate = await showDatePicker(
-                                  context: context,
-                                  initialDate: _startDateTime ?? DateTime.now(),
-                                  firstDate: _startDateTime ?? DateTime.now(),
-                                  lastDate: DateTime(2100),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => EventScheduleScreen()),
                                 );
-                                if (pickedDate != null) {
-                                  final pickedTime = await showTimePicker(
-                                    context: context,
-                                    initialTime: TimeOfDay.now(),
-                                  );
-                                  if (pickedTime != null) {
-                                    _endDateTime = DateTime(
-                                      pickedDate.year,
-                                      pickedDate.month,
-                                      pickedDate.day,
-                                      pickedTime.hour,
-                                      pickedTime.minute,
-                                    );
-                                    provider.setEndDate(_endDateTime);
-                                  }
-                                }
                               },
+                              child: const Text("Manage"),
                             ),
                           ],
                         ),
-                      );
-                    },
+                        Consumer<EventScheduleProvider>(
+                          builder: (context, provider, _) {
+                            if (provider.schedules.isEmpty) {
+                              return const Text("No schedules added yet.");
+                            }
+                            return Column(
+                              children: provider.schedules.map((s) {
+                                return ListTile(
+                                  leading:
+                                  const Icon(Icons.calendar_today, color: Color(0xFFFF6F61)),
+                                  title: Text(
+                                      "${dateFormat.format(s.startDatetime)} → ${dateFormat.format(s.endDatetime)}"
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
+
 
                   const SizedBox(height: 30),
                   _buildCard(
@@ -563,16 +557,5 @@ class _PublicEventFormState extends State<PublicEventForm> {
     );
   }
 
-  /// Helper: Date Tile
-  Widget _buildDateTile(String title, DateTime? date, VoidCallback onTap) {
-    return ListTile(
-      leading: const Icon(Icons.calendar_today, color: Color(0xFFFF6F61)),
-      title: Text(title),
-      subtitle: Text(
-        date != null ? date.toString() : "Select $title",
-        style: TextStyle(color: date != null ? Colors.black : Colors.grey),
-      ),
-      onTap: onTap,
-    );
-  }
+  final dateFormat = DateFormat('dd MMM yyyy, hh:mm a'); // e.g. 20 Sep 2025, 7:30 PM
 }

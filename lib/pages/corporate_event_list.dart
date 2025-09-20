@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:inyzo_admin_web/provider/event_list_provider.dart';
 import 'package:provider/provider.dart';
-
 import 'event_card.dart';
 
 class CorporateEventList extends StatefulWidget {

@@ -6,6 +6,7 @@ import 'package:inyzo_admin_web/pages/corporate_event_list.dart';
 import 'package:inyzo_admin_web/pages/dashboard_screen.dart';
 import 'package:inyzo_admin_web/provider/event_list_provider.dart';
 import 'package:inyzo_admin_web/provider/event_provider.dart';
+import 'package:inyzo_admin_web/provider/event_schedule_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'auth/login_screen.dart';
@@ -21,6 +22,8 @@ void main() {
           ChangeNotifierProvider(create: (_)=>LocationProvider()),
           ChangeNotifierProvider(create: (_)=>EventProvider()),
           ChangeNotifierProvider(create: (_)=>EventListProvider()),
+          ChangeNotifierProvider(create: (_)=>EventScheduleProvider()),
+
         ],
       child: MyApp()));
 }

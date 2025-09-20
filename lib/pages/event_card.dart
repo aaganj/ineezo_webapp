@@ -91,39 +91,21 @@ class _EventCardState extends State<EventCard> {
                         color: Colors.redAccent, // location icon color
                       ),
                       SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          widget.event.location,
-                          style: TextStyle(
-                            fontSize: screenWidth * 0.008 + 8,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey[700],
-                          ),
-                          overflow: TextOverflow.ellipsis, // prevents overflow
-                        ),
-                      ),
+                       Flexible(
+                         child: Text(
+                           widget.event.venue.name,
+                           style: TextStyle(
+                             fontSize: screenWidth * 0.008 + 8,
+                             fontWeight: FontWeight.w500,
+                             color: Colors.grey[700],
+                           ),
+                           overflow: TextOverflow.ellipsis, // prevents overflow
+                         ),
+                       ),
                     ],
                   ),
                   SizedBox(height: 4),
                   // Start Time
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.schedule,
-                        size: screenWidth * 0.008 + 12,
-                        color: Colors.grey[600],
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        getTimeUntilStart(widget.event.eventStartDateTime), // format if needed
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.008 + 8,
-                          fontWeight: FontWeight.normal,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ],
-                  ),
                   SizedBox(height: 2),
                   Row(
                     children: [

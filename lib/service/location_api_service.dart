@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:inyzo_admin_web/model/location_api_response.dart';
+
+import '../model/location_api_response.dart';
+
 
 class LocationApiService{
 
@@ -43,7 +45,7 @@ class LocationApiService{
     return _placePredictions;
   }
 
-  Future<LocationAPIResponse?> getPlaceDetails(String placeId) async{
+  Future<LocationApiResponse?> getPlaceDetails(String placeId) async{
     // final String url =
     //     'https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=geometry,name&key=$googleApiKey';
 
@@ -62,16 +64,22 @@ class LocationApiService{
           final double lat = location['lat'];
           final double long = location['lng'];
           final String name = result['name'];
-          // final String formattedAddress = result['formatted_address'];
 
           print('Lat : $lat and long : $long');
-          LocationAPIResponse apiResponse = LocationAPIResponse(
-              selectedLocationName: name,
-              selectedFormattedAddress: formattedAddress,
-              latitude: lat,
-              longitude: long);
+          final venueId = await saveVenue(
+               name,
+               formattedAddress,
+               lat,
+               long);
 
-          return apiResponse;
+          return LocationApiResponse(
+            name: name,
+            address: formattedAddress,
+            latitude: lat,
+            longitude: long,
+            placeId: placeId,
+            id: venueId,
+          );
         }
       }
 
@@ -80,6 +88,26 @@ class LocationApiService{
       return null;
     }
    return null;
+  }
+
+  Future<int> saveVenue(String name, String address, double lat, double lon) async {
+    final response = await http.post(
+      Uri.parse("https://api.ineezo.com/api/venues/save"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "name": name,
+        "address": address,
+        "latitude": lat,
+        "longitude": lon,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final data = jsonDecode(response.body);
+      return data['id']; // assuming backend returns venue {id, name, ...}
+    } else {
+      throw Exception("Failed to save venue");
+    }
   }
 
 }

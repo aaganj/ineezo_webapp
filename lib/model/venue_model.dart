@@ -1,4 +1,4 @@
-class LocationApiResponse {
+class Venue {
   final String name;
   final String address;
   final double latitude;
@@ -6,7 +6,7 @@ class LocationApiResponse {
   final String placeId;
   final int? id;
 
-  LocationApiResponse({
+  Venue({
     required this.name,
     required this.address,
     required this.latitude,
@@ -15,9 +15,9 @@ class LocationApiResponse {
     this.id,
   });
 
-  LocationApiResponse copyWith({int? id}) {
-    return LocationApiResponse(
-      name:name,
+  Venue copyWith({int? id}) {
+    return Venue(
+      name: name,
       address: address,
       latitude: latitude,
       longitude: longitude,
@@ -39,8 +39,8 @@ class LocationApiResponse {
   }
 
   /// ✅ Create Venue from JSON
-  factory LocationApiResponse.fromJson(Map<String, dynamic> json) {
-    return LocationApiResponse(
+  factory Venue.fromJson(Map<String, dynamic> json) {
+    return Venue(
       name: json['name'] ?? '',
       address: json['address'] ?? '',
       latitude: (json['latitude'] ?? 0).toDouble(),
