@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:inyzo_admin_web/auth/provider/auth_provider.dart';
 import 'package:provider/provider.dart';
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+
+  @override
+  void dispose() {
+    // ✅ Clear AuthProvider data when leaving this page
+    final provider = Provider.of<AuthProvider>(context, listen: false);
+    provider.clearData();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +68,95 @@ class DashboardPage extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600), // Center content on big screens
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                Text(
+                  'Update the Map Logo',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // Avatar / Upload Preview
+                Consumer<AuthProvider>(
+                  builder: (context, auth, _) {
+                    if (auth.isUploading) {
+                      return const SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6F61)),
+                        ),
+                      );
+                    } else if (provider.uploadedImageUrl != null) {
+                      return CircleAvatar(
+                        backgroundImage: MemoryImage(provider.imageBytes!),
+                        radius: 40,
+                      );
+                    } else if (provider.currentUser?.profileUrl != null) {
+                      return CircleAvatar(
+                        backgroundImage: NetworkImage(provider.currentUser!.profileUrl!),
+                        radius: 40,
+                      );
+                    } else {
+                      return const CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Color(0xFFFF6F61),
+                        child: Icon(Icons.person, size: 40, color: Colors.white),
+                      );
+                    }
+                  },
+                ),
+
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: 200,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+
+                      final result = await provider.pickAndUploadImage();
+
+
+                      if (provider.uploadedImageUrl == null &&
+                          provider.currentUser?.profileUrl == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Please upload a logo/profile image")),
+                        );
+                        return;
+                      }
+
+                      final success = await provider.updateMapLogo(provider.uploadedImageUrl!,
+                          provider.currentUser!.companyEmail);
+
+                      if (success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Map logo updated successfully")),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Map logo update failed")),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.upload_file, color: Colors.white),
+                    label: const Text("Upload Logo"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFF6F61),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 50),
                 /// Create Event Button
               _buildStylishButton(
               context,
@@ -114,4 +216,5 @@ Widget _buildStylishButton(BuildContext context,
       ),
     ),
   );
+
 }

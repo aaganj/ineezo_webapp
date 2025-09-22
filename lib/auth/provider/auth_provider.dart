@@ -156,6 +156,35 @@ class AuthProvider extends ChangeNotifier{
      }
    }
 
+   Future<bool> updateMapLogo(String profileUrl,String email) async{
+     _setLoading(true);
+     try {
+       final result = await _authService.updateMapLogo(
+         email: email,
+         profileUrl:profileUrl
+       );
+
+       print ("result from auth provider: $result");
+
+       final bool success = result['success'];
+       final int statusCode = result['statusCode'];
+       final dynamic data = result['data'];
+       _currentUser = CorporateUser.fromJson(data);
+
+       if(success){
+         _errorMessage = null;
+       }else{
+         _errorMessage = 'Profile update failed (Code: $statusCode)';
+       }
+       _setLoading(false);
+       return success;
+     }catch(e){
+       _errorMessage = "Profile update failed: $e";
+       _setLoading(false);
+       return false;
+     }
+   }
+
 
    Future<void> pickAndUploadImage() async {
      setUploading(true);

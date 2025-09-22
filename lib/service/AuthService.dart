@@ -111,6 +111,44 @@ class AuthService{
      }
    }
 
+  Future<Map<String,dynamic>> updateMapLogo({
+    required String email,
+    required String profileUrl,
+  }) async{
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken') ?? '';
+
+    final url = Uri.parse('https://api.ineezo.com/api/corporate-users/updateMapLogo');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'companyEmail' : email,
+        'profileUrl': profileUrl,
+      }),
+    );
+
+    if(response.statusCode == 200){
+      return{
+        'success':true,
+        'data': jsonDecode(response.body),
+        'statusCode':response.statusCode
+      };
+    }else{
+      return{
+        'success':false,
+        'data': jsonDecode(response.body),
+        'statusCode':response.statusCode
+      };
+    }
+  }
+
+
+
+
   Future<String?> getSignedImageUrlForHostProfile(String adminId) async{
     final urlResponse = await http.get(
       //  Uri.parse("http://13.219.188.62:8080/api/s3/presigned-url?userId=$userId"),
