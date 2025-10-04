@@ -54,7 +54,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
           password: authProvider.currentUser?.password ?? "", // unchanged
           profileUrl: authProvider.uploadedImageUrl ?? authProvider.currentUser!.profileUrl!,
           contactNumber: _phoneController.text,
-          address: _addressController.text
+          address: _addressController.text,
+          role: "user"
       );
 
       final success = await authProvider.updateProfile(updatedUser);

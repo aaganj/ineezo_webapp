@@ -5,6 +5,7 @@ class CorporateUser{
    final String profileUrl;
    final String contactNumber;
    final String address;
+   final String role;
 
   CorporateUser({
       required this.companyName,
@@ -13,6 +14,7 @@ class CorporateUser{
       required this.profileUrl,
       required this.contactNumber,
       required this.address,
+      required this.role,
     });
 
 // Factory constructor instead of static
@@ -24,6 +26,7 @@ class CorporateUser{
       profileUrl: json['profileUrl'] ?? '',
       contactNumber: json['contactNumber'] ?? '',
       address: json['address'] ?? '',
+      role: json['role'] ?? '',
     );
   }
 
@@ -35,6 +38,7 @@ class CorporateUser{
       'profileUrl': profileUrl,
       'contactNumber': contactNumber,
       'address': address,
+      'role': role,
     };
   }
 }

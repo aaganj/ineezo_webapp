@@ -26,6 +26,7 @@ class _DashboardPageState extends State<DashboardPage> {
     double buttonWidth = screenWidth > 600 ? 400 : double.infinity;
 
 
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -41,7 +42,10 @@ class _DashboardPageState extends State<DashboardPage> {
               onSelected: (value) {
                 if (value == 'profile') {
                   Navigator.pushNamed(context, '/profile');
-                } else if (value == 'logout') {
+                }else if (value == 'venue') {
+                  provider.logout();
+                  Navigator.pushNamed(context, '/venue');
+                }else if (value == 'logout') {
                   provider.logout();
                   Navigator.pushReplacementNamed(context, '/login');
                 }
@@ -51,6 +55,11 @@ class _DashboardPageState extends State<DashboardPage> {
                   const PopupMenuItem(
                     value: 'profile',
                       child: Text('Profile')
+                  ),
+                  if (provider.isAdmin)
+                  const PopupMenuItem(
+                      value: 'venue',
+                      child: Text('Venue')
                   ),
                   const PopupMenuItem(
                     value: 'logout',
@@ -118,7 +127,6 @@ class _DashboardPageState extends State<DashboardPage> {
                     onPressed: () async {
 
                       final result = await provider.pickAndUploadImage();
-
 
                       if (provider.uploadedImageUrl == null &&
                           provider.currentUser?.profileUrl == null) {

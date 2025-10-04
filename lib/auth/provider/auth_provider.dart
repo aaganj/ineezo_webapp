@@ -21,6 +21,7 @@ class AuthProvider extends ChangeNotifier{
    bool _isForgetLoading = false;
    bool _isResetLoading = false;
    String? resetToken=null;
+   String? _role;
 
    bool get isLoading => _isLoading;
    bool get isUploading => _isUploading;
@@ -30,8 +31,17 @@ class AuthProvider extends ChangeNotifier{
    String? get imageName => _imageName;
    String? get uploadedImageUrl => _uploadedImageUrl;
    CorporateUser? get currentUser => _currentUser;
-    bool get isForgetLoading => _isForgetLoading;
-    bool get isResetLoading => _isResetLoading;
+   bool get isForgetLoading => _isForgetLoading;
+   bool get isResetLoading => _isResetLoading;
+   String? get role => _role;
+
+   bool get isAdmin => _role == "ADMIN";
+
+   void setRole(String role) {
+     _role = role;
+     notifyListeners();
+   }
+
 
    void setUploadedImageUrl(String url) {
      _uploadedImageUrl = url;
@@ -76,6 +86,7 @@ class AuthProvider extends ChangeNotifier{
         _currentUser = CorporateUser.fromJson(data['corporateUserDto']);
         _isLoggedIn = true;
         _errorMessage = null;
+        setRole(_currentUser?.role ?? 'USER');
       } else {
         _isLoggedIn = false;
         _errorMessage = "Invalid email or password";

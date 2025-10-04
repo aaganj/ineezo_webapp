@@ -47,6 +47,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         profileUrl: authProvider.uploadedImageUrl!, // This will be set after uploading the image
         contactNumber: _phoneController.text,
         address: "",
+        role:"user"
       );
 
       final success = await authProvider.register(
